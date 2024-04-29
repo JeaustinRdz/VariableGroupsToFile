@@ -1,0 +1,38 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+#Add the trigger to your pipeline
+trigger: none
+
+#Import the Variable group
+variables:
+- group: Data #Add the variable group's name example "Data" 
+
+#Add the pool to your pipeline, in this case is a ubuntu Microsoft Hosted agent
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+
+#Add a task to save the values of the variable group in a file example "test.txt-Encoding "
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      # Add the content of the file
+      $text = "Name = $(Name)     ID = $(ID)     Date = $(Date)"
+
+      # Add the file name
+      $FileName= "test.txt"
+
+      # Save the file  
+      $text | Out-File -FilePath $FileName-Encoding utf8
+
+#Export the file to the artifact to review it 
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(System.DefaultWorkingDirectory)/test.txt-Encoding'
+    artifact: 'Drop'
+    publishLocation: 'pipeline'
